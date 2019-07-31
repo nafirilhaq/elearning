@@ -35,6 +35,13 @@
        "sEmptyTable":"Tidak Ada Data"
       }
     })
+    $('#table_kelompok').DataTable({
+      "aaSorting": [[3, "asc"]],
+      "language":{
+       "url":"//cdn.datatables.net/plug-ins/1.10.9/i18n/Indonesian.json",
+       "sEmptyTable":"Tidak Ada Data"
+      }
+    })
     $('#table_materi').DataTable({
       "aaSorting": [[3, "desc"]],
       "columnDefs": [

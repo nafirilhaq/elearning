@@ -63,11 +63,18 @@ class Web_App_Model extends CI_Model {
 		return $query;
 	}
 
+	public function getAnggotaKelompokRand($kelas)
+	{	
+		$query =  $this->db->query("SELECT tbl_siswa.nis, tbl_siswa.nama_siswa, tbl_siswa.id_siswa FROM tbl_siswa WHERE kelas='".$kelas."' ORDER BY RAND()");
+
+		return $query;
+	}
+
 	public function getKelompok($tugas)
 	{	
 		$query =  $this->db->query("SELECT * FROM tbl_kelompok WHERE id_tugas='".$tugas."'");
 
-		return $query->result();
+		return $query;
 	}
 
 	public function cekKelompok($tugas,$siswa)

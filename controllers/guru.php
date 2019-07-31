@@ -1740,6 +1740,110 @@ class Guru extends CI_Controller {
 		}
 	}
 
+	public function acak_kelompok()
+	{
+		$cek  = $this->session->userdata('logged_in');
+		$stts = $this->session->userdata('status');
+		if(!empty($cek) && $stts=='Guru')
+		{
+			header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+			header("Cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+
+			$bc['status'] = $this->session->userdata('status');
+			$bc['title'] = "Kelompok";
+			$bc['id_guru'] = $this->session->userdata('id_guru');
+
+			$sess = $this->web_app_model->getWhereData('tbl_guru','id_guru',$bc['id_guru']);
+			foreach ($sess->result() as $sess) {
+				$bc['nama']			= $sess->nama_guru;
+				$bc['foto']			= $sess->foto;
+				$bc['username'] 	= $sess->username;
+			}
+
+			$get_self = $this->web_app_model->getWhereData('tbl_login','id_guru',$bc['id_guru']);
+			foreach ($get_self->result() as $get) {
+				$id_login = $get->id_login;
+			}
+			$bc['hitung_pesan'] = $this->web_app_model->HitungPesanPengirim($id_login);
+			$bc['menu'] = $this->load->view('guru/menu',$bc,true);
+
+			$bc['header'] = $this->load->view('guru/header',$bc,true);
+			$bc['footer'] = $this->load->view('guru/footer',$bc,true);
+
+			$bc['uri3'] = $this->uri->segment(3);
+			$uri3 		= $this->uri->segment(3);
+			$bc['uri4'] = $this->uri->segment(4);
+			$uri4		= $this->uri->segment(4);
+
+			$bc['kelompok'] = $this->web_app_model->getAnggotaKelompok($bc['uri4']);
+			$bc['kelompok2'] = $this->web_app_model->getKelompok($bc['uri3']);
+
+			$jml_siswa = $bc['kelompok']->num_rows();
+			$jml_kel = $this->input->post("kel");
+
+			$hsl_bagi = $jml_siswa/$jml_kel;
+			$sisa_bagi = $jml_siswa%$jml_kel;
+			
+			$cek_sis = $this->web_app_model->getAnggotaKelompokRand($bc['uri4']);
+
+			if($sisa_bagi==0 && $jml_kel<$jml_siswa){
+				$i=0;  //jml siswa
+				$j=0; //jml kelompok
+				$n=0; //init kelompok
+
+				foreach ($cek_sis->result_array() as $cek) {
+					$simpan_kelompok["id_tugas"]		= $this->uri->segment(3);
+					$simpan_kelompok["id_siswa"]		= $cek['id_siswa'];
+					$simpan_kelompok["nama_siswa"]		= $cek['nama_siswa'];
+
+					$i++;
+
+					if($i % $hsl_bagi == 1){
+						$n++;
+					}
+					$simpan_kelompok["kelompok"]		= $n;
+
+					$cek_kel = $this->web_app_model->cekKelompok($bc['uri3'],$simpan_kelompok['id_siswa']);
+					if($cek_kel->num_rows()>0){
+						$this->web_app_model->updateMultipleWhere('tbl_kelompok',$simpan_kelompok,'id_tugas',$simpan_kelompok['id_tugas'],'id_siswa',$simpan_kelompok['id_siswa']);
+					} else{
+						$this->web_app_model->insertData('tbl_kelompok',$simpan_kelompok);
+					}
+				}
+			} else{
+				$i=0;  //jml siswa
+				$j=0; //jml kelompok
+				$n=0; //init kelompok
+
+				foreach ($cek_sis->result_array() as $cek) {
+					$simpan_kelompok["id_tugas"]		= $this->uri->segment(3);
+					$simpan_kelompok["id_siswa"]		= $cek['id_siswa'];
+					$simpan_kelompok["nama_siswa"]		= $cek['nama_siswa'];
+
+					$i++;
+
+					$temp = $i % $jml_kel;
+					$n = $temp+1;
+					
+					$simpan_kelompok["kelompok"]		= $n;
+
+					$cek_kel = $this->web_app_model->cekKelompok($bc['uri3'],$simpan_kelompok['id_siswa']);
+					if($cek_kel->num_rows()>0){
+						$this->web_app_model->updateMultipleWhere('tbl_kelompok',$simpan_kelompok,'id_tugas',$simpan_kelompok['id_tugas'],'id_siswa',$simpan_kelompok['id_siswa']);
+					} else{
+						$this->web_app_model->insertData('tbl_kelompok',$simpan_kelompok);
+					}
+				}
+			}
+			redirect('guru/tampil_kelompok/'.$uri3.'/'.$uri4.'');	
+		}
+		else
+		{
+			header('location:'.base_url().'index.php/web');	
+		}
+	}
+
 	public function update_kelompok()
 	{
 		$cek  = $this->session->userdata('logged_in');

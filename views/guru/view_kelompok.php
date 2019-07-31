@@ -28,10 +28,43 @@ echo $header;
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
+            <div class="box-header">
+            <button class="btn btn-success" data-toggle="modal" data-target="#acak_kelompok">Acak Kelompok</button>
+            <?php if($kelompok2->num_rows()>0){ ?>
+               <button class="btn btn-danger">Reset</button>
+            <?php } ?>
+
+            <div id="acak_kelompok" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;
+                    </button>
+                    <h4>Acak Kelompok</h4>
+                  </div>
+                  <form class="form-horizontal" method="post" action="<?php echo base_url();?>guru/acak_kelompok/<?php echo $uri3; ?>/<?php echo $uri4; ?>" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label for="kel" class="col-sm-5 control-label">Masukkan Jumlah Kelompok</label>
+
+                          <div class="col-sm-6">
+                            <input type="number" class="form-control" name="kel" id="kel" required />
+                          </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="reset" class="btn btn-default">Reset</button>
+                      <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            </div>
             <!-- /.box-header -->
             <div class="box-body">
               <div class="table-responsive">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="table_kelompok" class="table table-bordered table-striped">
                  <thead>
                     <tr>
                       <th style='text-align:center;vertical-align:middle' width="10px"> No.</th>
@@ -52,7 +85,7 @@ echo $header;
                         <td style='text-align:center;vertical-align:middle'><?php echo $kel['nis']; ?></td>
                         <td style='vertical-align:middle'><?php echo $kel['nama_siswa']; ?></td>
                         <td style='text-align:center;vertical-align:middle'>
-                        <?php foreach ($kelompok2 as $row) {
+                        <?php foreach ($kelompok2->result() as $row) {
                           if($row->id_siswa == $kel['id_siswa']){ 
                             // echo "Kelompok ".$row->kelompok;
                             $status=TRUE;
@@ -150,6 +183,6 @@ echo $header;
     <!-- /.content -->
 
   <!-- Footer -->
-
+<script src="<?php echo base_url();?>assets/bower_components/jquery/dist/jquery.min.js"></script>
 
 <?php echo $footer;?> 
